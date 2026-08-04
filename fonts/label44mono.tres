@@ -1,0 +1,11 @@
+[gd_resource type="LabelSettings" format=3 uid="uid://binod60l8i2ni"]
+
+[ext_resource type="FontFile" uid="uid://box70xu60paqv" path="res://fonts/font44mono.ttf" id="1_3hufr"]
+
+[sub_resource type="FontVariation" id="FontVariation_3hufr"]
+base_font = ExtResource("1_3hufr")
+spacing_top = -7
+
+[resource]
+line_spacing = 0.0
+font = SubResource("FontVariation_3hufr")

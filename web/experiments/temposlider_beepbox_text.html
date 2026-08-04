@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>BeepBox Synth Example</title>
+		<meta name="robots" content="noindex, nofollow" />
+	</head>
+	<body>
+		<button onclick="togglePlay()">Play/Pause</button>
+		<p>View page source to see how to play this song from javascript!</p>
+		<script type="text/javascript" src="beepbox_synth.js"></script>
+		<script type="text/javascript">
+			var synths = [
+				// new beepbox.Synth("https://www.beepbox.co/#9n31sbk7l00e0ft2-a7g0fj07r1i0o443T0v2u00f10u2qw02d03w2h0E0T0v2u00f10u2qw02d03w2h0E0T0v0u00f10u2qw02d03w1h0E0T2v0u02f0qM012d04w0E0b4z8Ql6hkpUsiczhkp5hDxN8Od5hAl6u74z8Ql6hkpUsp25XFEYtghQ4sBihS7dWxvmnOhv1As2hO5h7I2TyTyM979l4tp79McykO-OgKA2eYzAU218Wqo6nM4x8i1704s8hQk6nbWy-ULLerQa2ewzEF8XayeiAjbRa2ewzEIIeDFEZ1ghQ4t5171Cnkpuh5YCnOxvihM978l4uwbqbsb04szkhQAsD0i9jbUugAbOe08XXU4zBaWVv2O4x8As0hM97hgpsLAO-YLA3CZiwzE8W84zAqOeyjcLoE8W2eyOMWuCzZk4t17hghQCngpuwnOhv95Y4hRAsxkhX0I8b12M178R4tp79gcAkVknQBZx79BZd1BWNv1BZBpQ-IhMxv05ZpvpghS4uj5YanT4txvonOp7J5ZFvqhSBZFvqhw0"),
+				new beepbox.Synth("5sbk4l00e0ftaa7g0fj7i0r1w1100f0000d1110c0000h0000v2200o3320b4z8Ql6hkpUsiczhkp5hDxN8Od5hAl6u74z8Ql6hkpUsp24ZFzzQ1E39kxIceEtoV8s66138l1S0L1u2139l1H39McyaeOgKA0TxAU213jj0NM4x8i0o0c86ywz7keUtVxQk1E3hi6OEcB8Atl0q0Qmm6eCexg6wd50oczkhO8VcsEeAc26gG3E1q2U406hG3i6jw94ksf8i5Uo0dZY26kHHzxp2gAgM0o4d516ej7uegceGwd0q84czm6yj8Xa0Q1EIIctcvq0Q1EE3ihE8W1OgV8s46Icxk7o24110w0OdgqMOk392OEWhS1ANQQ4toUctBpzRxx1M0WNSk1I3ANMEXwS3I79xSzJ7q6QtEXgw0"),
+				new beepbox.Synth("9n31s0k0l00e00t1La7g00j07r1i0o432T0v1u12f10s4q00d03w2h2E0T8v1uedf10s2q013d27x670W7E0T1v1u3bf0q8x10n521d08AcF8B4Q047cPa744E2b776T2v1u15f10w4qw02d03w0E0b4h4p1vFE-Pd7Gn9FFE-aiddjG2UH977w00000"),
+				new beepbox.Synth("9n31s0k0l00e00t4Ia7g0cj07r1i0o432T1v1uacf0q011d03AbF6B0Q2580PfffaE501602612622636T0v1ua7f10o9q83131d19w0h0E0T5v1ua5f60lc2dd2j02e02fd178q8141d26HK_Sziiirrqih99h0E0T4v1uf0f0q011z6666ji8k8k3jSBKSJJAArriiiiii07JCABrzrrrrrrr00YrkqHrsrrrrjr005zrAqzrjzrrqr1jRjrqGGrrzsrsA099ijrABJJJIAzrrtirqrqjqixzsrAjrqjiqaqqysttAJqjikikrizrHtBJJAzArzrIsRCITKSS099ijrAJS____Qg99habbCAYrDzh00E0b400000000g0000000100000000400000000p1dLrQv1jZg00000"),
+				new beepbox.Synth("9n31sbk0l00e00t1oa7g0cj07r1i0o432T1v1u91f10l7q8121d35AbF6B8Q28c0Pb745E179T0v1ua7f10o9q83131d19w0h0E0T5v1ua5f60lc2dd2j02e02fd178q8141d26HK_Sziiirrqih99h0E0T4v1uf0f0q011z6666ji8k8k3jSBKSJJAArriiiiii07JCABrzrrrrrrr00YrkqHrsrrrrjr005zrAqzrjzrrqr1jRjrqGGrrzsrsA099ijrABJJJIAzrrtirqrqjqixzsrAjrqjiqaqqysttAJqjikikrizrHtBJJAzArzrIsRCITKSS099ijrAJS____Qg99habbCAYrDzh00E0b400000000g0000000100000000400000000p1PFBOx9icAPbwthdg2pvbFa1A4R_en8mTW0Bhdgept8McxEg00000"),
+				new beepbox.Synth("9n31sbk0l00e00t1La7g0cj07r1i0o432T1v1u91f10l7q8121d35AbF6B8Q28c0Pb745E179T0v1ua7f10o9q83131d19w0h0E0T5v1ua5f60lc2dd2j02e02fd178q8141d26HK_Sziiirrqih99h0E0T4v1uf0f0q011z6666ji8k8k3jSBKSJJAArriiiiii07JCABrzrrrrrrr00YrkqHrsrrrrjr005zrAqzrjzrrqr1jRjrqGGrrzsrsA099ijrABJJJIAzrrtirqrqjqixzsrAjrqjiqaqqysttAJqjikikrizrHtBJJAzArzrIsRCITKSS099ijrAJS____Qg99habbCAYrDzh00E0b400000000g0000000100000000400000000p1PFBOx9icAPbwthdg2pvbFa1A4R_en8mTW0Bhdgept8McxEg00000"),
+			];
+			function togglePlay() {
+				for (var i = synths.length - 1; i >= 0; i--) {
+					if (synths[i].playing) {
+						synths[i].pause();
+					} else {
+						synths[i].play();
+					}
+				}
+			}
+		</script>
+	</body>
+</html>

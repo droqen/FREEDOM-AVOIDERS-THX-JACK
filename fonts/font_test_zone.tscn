@@ -1,0 +1,54 @@
+[gd_scene load_steps=7 format=3 uid="uid://bl04qcpyadyqv"]
+
+[ext_resource type="FontVariation" uid="uid://dxacsefvd7ebq" path="res://fonts/44_shortvariation.tres" id="1_ecxau"]
+[ext_resource type="FontVariation" uid="uid://belrgyhj2bpcw" path="res://fonts/88_shortvariation.tres" id="2_73qa3"]
+[ext_resource type="FontVariation" uid="uid://cs0t472fclkqm" path="res://fonts/courier_variation.tres" id="3_73qa3"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_ak8oe"]
+font = ExtResource("1_ecxau")
+
+[sub_resource type="LabelSettings" id="LabelSettings_tnu86"]
+font = ExtResource("2_73qa3")
+
+[sub_resource type="LabelSettings" id="LabelSettings_ecxau"]
+font = ExtResource("3_73qa3")
+font_size = 12
+
+[node name="font_test_zone" type="Node2D"]
+
+[node name="44" type="Label" parent="."]
+offset_right = 40.0
+offset_bottom = 23.0
+text = "test 123
+nextline"
+label_settings = SubResource("LabelSettings_ak8oe")
+
+[node name="2x44" type="Label" parent="."]
+offset_left = 40.0
+offset_right = 120.0
+offset_bottom = 23.0
+scale = Vector2(0.5, 0.5)
+text = "test 123
+nextline"
+label_settings = SubResource("LabelSettings_tnu86")
+
+[node name="2x44 (2)" type="Label" parent="."]
+offset_left = 80.0
+offset_top = 11.0
+offset_right = 160.0
+offset_bottom = 34.0
+scale = Vector2(0.5, 0.5)
+text = "test 123
+nextline
+aaaaaaaaaaaaa"
+label_settings = SubResource("LabelSettings_tnu86")
+
+[node name="courier" type="Label" parent="."]
+offset_left = 80.0
+offset_right = 210.0
+offset_bottom = 49.0
+scale = Vector2(0.5, 0.5)
+text = "test 123 
+nextline
+aaaaaaaaaaaaa"
+label_settings = SubResource("LabelSettings_ecxau")

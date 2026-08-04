@@ -1,0 +1,43 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="freedom"
+run/main_scene="uid://bxmeaxo1mshrf"
+config/features=PackedStringArray("4.7", "GL Compatibility")
+config/icon="res://icon.svg"
+
+[autoload]
+
+Pin="*uid://xrpfrgbeoidf"
+Dreamer="*uid://ophjb8jpxt5b"
+Beeper="*uid://c2yvtniw1b2pr"
+Viewer="*uid://bn470orfmjaou"
+
+[display]
+
+window/stretch/aspect="expand"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/navdi_dreamweaver/plugin.cfg", "res://addons/pyxel_import/plugin.cfg")
+
+[physics]
+
+3d/physics_engine="Jolt Physics"
+
+[rendering]
+
+rendering_device/driver.windows="d3d12"
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+2d/snap/snap_2d_transforms_to_pixel=true
+2d/snap/snap_2d_vertices_to_pixel=true

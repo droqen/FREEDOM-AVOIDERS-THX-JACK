@@ -1,0 +1,11 @@
+[gd_resource type="FontVariation" load_steps=2 format=3 uid="uid://cs0t472fclkqm"]
+
+[sub_resource type="SystemFont" id="SystemFont_budtu"]
+font_names = PackedStringArray("Courier New")
+font_weight = 900
+
+[resource]
+base_font = SubResource("SystemFont_budtu")
+spacing_glyph = 3
+spacing_top = -14
+spacing_bottom = 3

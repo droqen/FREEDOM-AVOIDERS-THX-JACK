@@ -1,0 +1,8 @@
+[gd_resource type="FontVariation" load_steps=2 format=3 uid="uid://belrgyhj2bpcw"]
+
+[ext_resource type="FontFile" uid="uid://dccfskg548gso" path="res://fonts/font88mono.ttf" id="1_jin2e"]
+
+[resource]
+base_font = ExtResource("1_jin2e")
+spacing_top = -11
+spacing_bottom = 5

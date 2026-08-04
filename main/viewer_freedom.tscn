@@ -1,0 +1,70 @@
+[gd_scene format=3 uid="uid://bn470orfmjaou"]
+
+[ext_resource type="Script" uid="uid://cj0dqrn1iwa8n" path="res://navdi/navdiviewer.gd" id="1_wkrd6"]
+[ext_resource type="Script" uid="uid://b0a2567qf76nk" path="res://navdi/navdilog.gd" id="2_o4j3q"]
+[ext_resource type="Shader" uid="uid://b3r8p6pj81br3" path="res://navdi/navdiviewer_default.gdshader" id="3_87gwf"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_mgv8c"]
+shader = ExtResource("3_87gwf")
+shader_parameter/zoom = 4.0
+shader_parameter/dreamsize = Vector2(100, 100)
+shader_parameter/smoothness = 0.0
+shader_parameter/read_offset = Vector2(0, 0)
+
+[node name="NavdiViewer" type="Node" unique_id=2188653]
+script = ExtResource("1_wkrd6")
+metadata/_custom_type_script = "uid://cj0dqrn1iwa8n"
+
+[node name="ViewCamera" type="Camera2D" parent="." unique_id=273114849]
+anchor_mode = 0
+
+[node name="UiLayer" type="CanvasLayer" parent="." unique_id=1188763552]
+layer = 15
+
+[node name="Log" type="HBoxContainer" parent="UiLayer" unique_id=1237976280]
+offset_left = 10.0
+offset_right = 238.0
+offset_bottom = 69.0
+theme_override_constants/separation = 0
+script = ExtResource("2_o4j3q")
+
+[node name="Keys" type="RichTextLabel" parent="UiLayer/Log" unique_id=1451512351]
+layout_mode = 2
+bbcode_enabled = true
+text = "key3::
+key2::
+[color=#fff2]key::"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 2
+
+[node name="Messages" type="RichTextLabel" parent="UiLayer/Log" unique_id=1424979674]
+layout_mode = 2
+bbcode_enabled = true
+text = "value3
+value2
+[color=#fff2]value"
+fit_content = true
+autowrap_mode = 0
+
+[node name="ViewShaderLayer" type="CanvasLayer" parent="." unique_id=586778085]
+layer = 5
+
+[node name="ViewShaderRect" type="ColorRect" parent="ViewShaderLayer" unique_id=926355122]
+material = SubResource("ShaderMaterial_mgv8c")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="BgLayer" type="CanvasLayer" parent="." unique_id=1911662527]
+layer = -10
+
+[node name="BgRect" type="ColorRect" parent="BgLayer" unique_id=230612444]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 1)

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>BeepBox Synth Example</title>
+		<meta name="robots" content="noindex, nofollow" />
+	</head>
+	<body>
+		<button onclick="togglePlay()">Play/Pause</button>
+		<p>View page source to see how to play this song from javascript!</p>
+		<p id="synth-ctx"></p>
+		<p id="global-ctx"></p>
+		<script type="text/javascript" src="beepbox_synth.js"></script>
+		<script type="text/javascript">
+			var globalCtx = new (window.AudioContext || window.webkitAudioContext)({ latencyHint: "balanced" });
+			globalCtx.sinkId = "hello";
+			// globalCtx.resume();
+			var synths = [
+				new beepbox.Synth("5sbk4l00e0ftaa7g0fj7i0r1w1100f0000d1110c0000h0000v2200o3320b4z8Ql6hkpUsiczhkp5hDxN8Od5hAl6u74z8Ql6hkpUsp24ZFzzQ1E39kxIceEtoV8s66138l1S0L1u2139l1H39McyaeOgKA0TxAU213jj0NM4x8i0o0c86ywz7keUtVxQk1E3hi6OEcB8Atl0q0Qmm6eCexg6wd50oczkhO8VcsEeAc26gG3E1q2U406hG3i6jw94ksf8i5Uo0dZY26kHHzxp2gAgM0o4d516ej7uegceGwd0q84czm6yj8Xa0Q1EIIctcvq0Q1EE3ihE8W1OgV8s46Icxk7o24110w0OdgqMOk392OEWhS1ANQQ4toUctBpzRxx1M0WNSk1I3ANMEXwS3I79xSzJ7q6QtEXgw0", globalCtx),
+			];
+			synths[0].play()
+			function togglePlay() {
+				for (var i = synths.length - 1; i >= 0; i--) {
+					if (synths[i].playing) {
+						synths[i].pause();
+					} else {
+						synths[i].play();
+						console.log(synths[i].audioCtx,synths[i].persistentAudioCtx,globalCtx);
+					}
+				}
+			}
+
+			window.setInterval(
+				()=>{
+					if (synths[0].audioCtx) {
+						document.getElementById("synth-ctx").innerText = synths[0].audioCtx.sinkId + " " + synths[0].audioCtx.state;
+					} else {
+						document.getElementById("synth-ctx").innerText = "none yet";
+					}
+					document.getElementById("global-ctx").innerText = globalCtx.sinkId + " " +globalCtx.state;
+				},
+			100);
+		</script>
+	</body>
+</html>

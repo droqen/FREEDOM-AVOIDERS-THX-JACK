@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>droqever v2.0beta</title>
+		<meta charset="UTF-8">
+		<style>
+			html, body { margin: 0; }
+			#canvas {
+				width: 100vw; height: 100vh; background: #888;
+			}
+		</style>
+	</head>
+	<body>
+		<canvas id="canvas" tabindex="0"></canvas>
+		<script type="text/javascript" src="beepbox_synth.js"></script>
+		<script>
+			const globalAudioCtx = new (window.AudioContext || window.webkitAudioContext)({ latencyHint: "balanced" });
+			globalAudioCtx.sinkId = "navdiJSAudioCtx";
+			const navdilink = {
+				onDrop(files){
+					console.log("navdilink default onDrop has not been overridden yet")
+				},
+				setDropCallback(cb){
+					console.log("navdilink setDropCallback disabled; Godot web builds handle it fine themselves")
+					// this.onDrop=cb;
+				},
+
+				bgm_synth : null,
+				play_bgm_string(bgm_string){
+					console.log("play",bgm_string);
+					this.stop_bgm();
+					this.bgm_synth = new beepbox.Synth(bgm_string, globalAudioCtx);
+					this.bgm_synth.play();
+				},
+				stop_bgm(){
+					if(this.bgm_synth!=null) {
+						this.bgm_synth.pause();
+						this.bgm_synth = null;
+					}
+				},
+
+				play_sfx_string(sfx_string){
+					let sfx_synth = new beepbox.Synth(sfx_string, globalAudioCtx);
+					sfx_synth.loopRepeatCount = 0; // no looping!
+					sfx_synth.play();
+					this._track_sfx(sfx_synth);
+				},
+
+				sfxs_playing : [],
+				_track_sfx(sfx){
+					if(sfx.loopRepeatCount<0) {
+						throw new Error("navdilink should only track_sfx on a nonlooping beepbox synth");
+					} else {
+						this.sfxs_playing.push(sfx);
+					}
+				},
+				_cleanup_sfxs(){
+					this.sfxs_playing.filter(sfx => !sfx.ended);
+				},
+			};
+			window.navdilink = navdilink;
+		</script>
+		<script>
+			document.addEventListener('click', ()=>{
+				if (globalAudioCtx.state != "running") { globalAudioCtx.resume(); }
+			});
+			document.addEventListener('keydown', (e) => {
+				if (globalAudioCtx.state != "running") { globalAudioCtx.resume(); }
+			});
+			document.addEventListener('dragover', (e)=>{
+				e.preventDefault()
+			});
+			document.addEventListener('drop', (e) => {
+				if (globalAudioCtx.state != "running") { globalAudioCtx.resume(); }
+				console.log(e.dataTransfer.files);
+				// document.getElementById('file').files = e.dataTransfer.files;
+				navdilink.onDrop(e.dataTransfer.files);
+				e.preventDefault();
+			});
+		</script>
+		<script src="$GODOT_URL"></script>
+		<script>
+			var engine = new Engine($GODOT_CONFIG);
+			engine.startGame();
+		</script>
+	</body>
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>My Template</title>
+		<meta charset="UTF-8">
+		<style>
+			html, body { margin: 0; }
+			#canvas {
+				width: 100vw; height: 100vh; background: #888;
+			}
+		</style>
+	</head>
+	<body>
+		<canvas id="canvas"></canvas>
+		<script>
+			const navdilink = {
+				type: "???",
+				testCallback(cb) {
+					window.setTimeout(cb, 1000, ["array",]);
+				},
+				onDrop(files){
+					console.log("navdilink default onDrop has not been overridden yet")
+				},
+				setDropCallback(cb){
+					onDrop=cb;
+				}
+			};
+			window.navdilink = navdilink;
+		</script>
+		<script>
+			document.addEventListener('dragover', (e)=>{
+				e.preventDefault()
+			});
+			document.addEventListener('drop', (e) => {
+				console.log(e.dataTransfer.files);
+				// document.getElementById('file').files = e.dataTransfer.files;
+				navdilink.onDrop(e.dataTransfer.files);
+				e.preventDefault();
+			});
+		</script>
+		<script src="$GODOT_URL"></script>
+		<script>
+			var engine = new Engine($GODOT_CONFIG);
+			engine.startGame();
+		</script>
+	</body>
+</html>

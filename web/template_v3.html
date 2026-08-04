@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>newgame</title>
+		<meta charset="UTF-8">
+		<link rel="stylesheet" href="progbar_v1/style.css" />
+		<style>
+			@font-face {
+				font-family: font44mono;
+				src: url("assets/font44mono.ttf");
+			}
+			html, body, #canvas { margin:0; background: $GODOT_SPLASH_COLOR;
+				font-family: "font44mono", monospace; }
+			#canvas { width: 100vw; height: 100vh; }
+		</style>
+	</head>
+	<body>
+		<canvas id="canvas" tabindex="0"></canvas>
+		<script type="text/javascript" src="js/beepbox_synth.js"></script>
+		<script type="text/javascript" src="js/navdilink.js"></script>
+		<script src="$GODOT_URL"></script>
+		<div id="progress-zone">
+			<div id="progress-count"></div>
+			<div id="progress-bar"></div>
+		</div>
+		<script type="text/javascript" src="progbar_v1/script.js"></script>
+		<script>
+			var engine = new Engine($GODOT_CONFIG);
+			engine.startGame({
+				'onProgress': updateProgress,
+			}).then(() => {
+				hideProgress();
+			}, displayFailureNotice);
+		</script>
+	</body>
+</html>

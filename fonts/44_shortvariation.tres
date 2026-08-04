@@ -1,0 +1,9 @@
+[gd_resource type="FontVariation" load_steps=2 format=3 uid="uid://dxacsefvd7ebq"]
+
+[ext_resource type="FontFile" uid="uid://b6m0vywrqamrr" path="res://fonts/font44pextv2mono.ttf" id="1_fofk6"]
+
+[resource]
+base_font = ExtResource("1_fofk6")
+spacing_glyph = -9
+spacing_top = -11
+spacing_bottom = 1

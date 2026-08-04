@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>droqever v2.0beta</title>
+		<meta charset="UTF-8">
+		<style>
+			html, body { margin: 0; }
+			#canvas {
+				width: 100vw; height: 100vh; background: #888;
+			}
+		</style>
+	</head>
+	<body>
+		<canvas id="canvas" tabindex="0"></canvas>
+		<script type="text/javascript" src="js/beepbox_synth.js"></script>
+		<script type="text/javascript" src="js/navdilink.js"></script>
+		<script src="$GODOT_URL"></script>
+		<script>
+			var engine = new Engine($GODOT_CONFIG);
+			engine.startGame();
+		</script>
+		<script type="text/javascript" src="js/godot_preloader.js"></script>
+	</body>
+</html>
