@@ -28,6 +28,10 @@ func showsprite(s):
 		else: sprite.hide()
 		#print(sprite, sprite.visible)
 
+func whoosh(a,b,rate):
+	# a fancy move_toward
+	return lerp(move_toward(a,b,rate),b,rate*0.1)
+
 func _physics_process(_delta: float) -> void:
 	if not bufs.has(INVINCBUF):
 		if $hurtbox.get_overlapping_bodies():
@@ -46,33 +50,34 @@ func _physics_process(_delta: float) -> void:
 		var canturn : bool = not bufs.has(TURNBUF) and not bufs.has(HURTBUF)
 		match rot:
 			0:
-				preferred_dir = Vector2(1,-1) # north-east-ish
-				if dpad.y > 0 and dpad.x >= 0 and canturn:
-					# press down (south) to rotate
+				preferred_dir = Vector2.UP.rotated(PI*0.25) # north-east
+				if dpad.x > 0 and dpad.y >= 0 and canturn:
+					# press right to rotate, while NOT pressing north
 					rot = 1
 					bufs.on(TURNBUF)
 			1:
-				preferred_dir = Vector2(1,1) # south-east
-				if dpad.x < 0 and dpad.y >= 0 and canturn:
+				preferred_dir = Vector2.RIGHT.rotated(PI*0.25)
+				if dpad.y > 0 and dpad.x <= 0 and canturn:
 					rot = 2
 					bufs.on(TURNBUF)
 			2:
-				preferred_dir = Vector2(-1,1) # south-west
-				if dpad.y < 0 and dpad.x <= 0 and canturn:
+				preferred_dir = Vector2.DOWN.rotated(PI*0.25)
+				if dpad.x < 0 and dpad.y <= 0 and canturn:
 					rot = 3
 					bufs.on(TURNBUF)
 			3:
-				preferred_dir = Vector2(-1,-1) # north-west
-				if dpad.x > 0 and dpad.y <= 0 and canturn:
+				preferred_dir = Vector2.LEFT.rotated(PI*0.25)
+				if dpad.y < 0 and dpad.x >= 0 and canturn:
 					rot = 0
 					bufs.on(TURNBUF)
 		var raw_dot = preferred_dir.dot(Vector2(dpad)) # 2 = full match, -1 : least match
-		var smooth_dot = 0.33 + raw_dot * 0.33
-		var max_speed = 0.25 + 1.25 * smooth_dot
-		vx = move_toward(vx,dpad.x*max_speed,
-			0.05 * smooth_dot if dpad.x*vx>0 else 0.05)
-		vy = move_toward(vy,dpad.y*max_speed,
-			0.05 * smooth_dot if dpad.y*vy>0 else 0.05)
+		var smooth_dot = 0.5 + 0.5 * clamp(raw_dot,-.7,.7)/.7
+		var max_speed = 0.35 + 0.85 * smooth_dot * smooth_dot
+		var accelmult = 0.02 + 0.04 * smooth_dot
+		vx = whoosh(vx,dpad.x*max_speed,
+			accelmult if dpad.x*vx>0 else 0.05)
+		vy = whoosh(vy,dpad.y*max_speed,
+			accelmult if dpad.y*vy>0 else 0.05)
 		#if dpad.x and $sprites.scale.x != dpad.x:
 			#$sprites.scale.x = dpad.x
 			#bufs.on(TURNBUF)

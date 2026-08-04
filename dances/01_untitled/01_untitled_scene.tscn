@@ -48,6 +48,7 @@ looping = true
 metadata/_custom_type_script = "uid://b24ikpjqx8lqn"
 
 [node name="Label" type="Label" parent="." unique_id=1446588759]
+visible = false
 offset_left = 11.0
 offset_top = 10.0
 offset_right = 111.0
@@ -60,7 +61,7 @@ wanted nothing more."
 label_settings = ExtResource("8_hq3j5")
 
 [node name="player" type="Node2D" parent="." unique_id=1744644868]
-position = Vector2(129, 71)
+position = Vector2(77, 72)
 script = ExtResource("6_k2plj")
 
 [node name="sprites" type="Node2D" parent="player" unique_id=1548953500]
