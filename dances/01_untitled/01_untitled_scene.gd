@@ -276,56 +276,23 @@ func _physics_process(_delta: float) -> void:
 		if noplayer:
 			pass
 		else:
-			killcubeloop( func(c,t): match t:
-					9:  if randf() < 0.4: settidcube(c,6+randi()%2)
-					40: if randf() < 0.4: settidcube(c,46+randi()%2)
-			)
+			killcubeloop(_kcl_spawn_dithers_firstprobability)
 	elif phase > 10 and phase < 120:
 		if noplayer:
 			if phase > 40: phase = 40
 		elif phase % 10 == 0:
-			killcubeloop( func(c,t): match t:
-					6,7: for t2 in [6,4,9]:
-						if randf() < 0.1: settidcube(c,t2)
-					46,47,56,57: for t2 in [46,47,56,57]:
-						if randf() < 0.1: settidcube(c,t2)
-			)
-		if phase == 40:
-			killcubeloop( func(c,t): match t:
-				3,96,97,98,99: settidcube(c, 96)
-				40: if noplayer: settidcube(c, 86)
-			)
-		if phase == 29:
-			killcubeloop( func(c,t): match t:
-				3,96,97,98,99 : settidcube(c, 97)
-				86,87,88,89   : settidcube(c, 87)
-			)
-		if phase == 19:
-			killcubeloop( func(c,t): match t:
-				3,96,97,98,99 : settidcube(c, 98)
-				86,87,88,89   : settidcube(c, 88)
-			)
-		if phase == 13:
-			killcubeloop( func(c,t): match t:
-				3,96,97,98,99 : settidcube(c, 99)
-				86,87,88,89   : settidcube(c, 89)
-			)
+			killcubeloop(_kcl_spawn_dithers_intermittentprobability)
+		if phase == 40: killcubeloop(_kcl_slidefades_frm6_noplayer if noplayer
+								else _kcl_slidefades_frm6)
+		if phase == 29: killcubeloop(_kcl_slidefades_frm7)
+		if phase == 19: killcubeloop(_kcl_slidefades_frm8)
+		if phase == 13: killcubeloop(_kcl_slidefades_frm9)
 	elif phase == 10:
-			killcubeloop( func(c,t): match t:
-				3,7,23,86,87,88,89,96,97,98,99: settidcube(c,9)
-				6,46,56: settidcube(c,4)
-				47,57: settidcube(c,40)
-			)
-		# all cleared
+		killcubeloop(_kcl_dither_resolve_all)
 	elif phase == 5:
-		killcubeloop( func(c,t): match t:
-			4, 54: settidcube(c,5)
-		)
+		killcubeloop(_kcl_turn_pending_solids_into_flash_solids)
 	elif phase <= 0:
-		killcubeloop( func(c,t): match t:
-			3: settidcube(c, 9)
-			5: settidcube(c, 3)
-		)
+		killcubeloop(_kcl_clear_solids_calm_flash_solids)
 		if noplayer and not killmaze.get_used_cells_by_tids([3]):
 			# save.
 			var file : FileAccess
@@ -338,3 +305,49 @@ func _physics_process(_delta: float) -> void:
 			Dreamer.dreamfresh(load("res://dances/01_untitled/01_untitled_Dream.tres"))
 		
 		phase = 200 + randi() % 100
+
+func _kcl_spawn_dithers_firstprobability(c:Vector2i,t:int):
+	match t:
+					9:  if randf() < 0.4: settidcube(c,6+randi()%2)
+					40: if randf() < 0.4: settidcube(c,46+randi()%2)
+func _kcl_spawn_dithers_intermittentprobability(c:Vector2i,t:int):
+	match t: # make more performant - minimize randcalls
+		6,7: for t2 in [6,4,9]:
+			if randf() < 0.1: settidcube(c,t2)
+		46,47,56,57: for t2 in [46,47,56,57]:
+			if randf() < 0.1: settidcube(c,t2)
+
+func _kcl_slidefades_frm6(c:Vector2i,t:int):
+	match t:
+		3,96,97,98,99: settidcube(c, 96)
+		#40: if noplayer: settidcube(c, 86)
+func _kcl_slidefades_frm6_noplayer(c:Vector2i,t:int):
+	match t:
+		3,96,97,98,99: settidcube(c, 96)
+		40: settidcube(c, 86)
+func _kcl_slidefades_frm7(c:Vector2i,t:int):
+	match t:
+		3,96,97,98,99 : settidcube(c, 97)
+		86,87,88,89   : settidcube(c, 87)
+func _kcl_slidefades_frm8(c:Vector2i,t:int):
+	match t:
+		3,96,97,98,99 : settidcube(c, 98)
+		86,87,88,89   : settidcube(c, 88)
+func _kcl_slidefades_frm9(c:Vector2i,t:int):
+	match t:
+		3,96,97,98,99 : settidcube(c, 99)
+		86,87,88,89   : settidcube(c, 89)
+	
+func _kcl_dither_resolve_all(c:Vector2i,t:int):
+	match t:
+		3,7,23,86,87,88,89,96,97,98,99: settidcube(c,9)
+		6,46,56: settidcube(c,4)
+		47,57: settidcube(c,40)
+
+func _kcl_turn_pending_solids_into_flash_solids(c:Vector2i,t:int):
+	match t:
+			4, 54: settidcube(c,5)
+func _kcl_clear_solids_calm_flash_solids(c:Vector2i,t:int):
+	match t:
+			3: settidcube(c, 9)
+			5: settidcube(c, 3)
