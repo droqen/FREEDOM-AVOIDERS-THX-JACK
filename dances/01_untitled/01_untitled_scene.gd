@@ -39,16 +39,19 @@ func getcubepos(pos) -> Vector2i:
 	return cubecell
 
 func settidcube(cell,tid,tidafter=-1,delay=0) -> void:
-	var rottable : bool = false
+	#var rottable : bool = false
 	#if tid in [4, 6, 46]: rottable = false
 	if cell.x % 2 == 0 and cell.y % 2 == 0:
 		killmaze.set_cell_tid(cell, tid)
 		cell.x += 1
-		killmaze.set_cell_tid_transformed(cell, tid, 3 if rottable else 0)
+		#killmaze.set_cell_tid_transformed(cell, tid, 3 if rottable else 0)
+		killmaze.set_cell_tid(cell, tid)
 		cell.y += 1
-		killmaze.set_cell_tid_transformed(cell, tid, 2 if rottable else 0)
+		#killmaze.set_cell_tid_transformed(cell, tid, 2 if rottable else 0)
+		killmaze.set_cell_tid(cell, tid)
 		cell.x -= 1
-		killmaze.set_cell_tid_transformed(cell, tid, 1 if rottable else 0)
+		#killmaze.set_cell_tid_transformed(cell, tid, 1 if rottable else 0)
+		killmaze.set_cell_tid(cell, tid)
 		if delay > 0:
 			cell.y -= 1
 			await get_tree().create_timer(delay/60.0).timeout
@@ -147,6 +150,15 @@ func chaser_select_possibilities(possibilities:Array[Vector2i], anydir:Array[Vec
 
 	for d in [[0,0],[1,0],[1,1],[0,1]]:
 		chasermaze.set_cell_tid(Vector2i(chaser.x+d[0],chaser.y+d[1]),80)
+
+func killcubeloop(handle_cell_and_tid:Callable) -> void:
+	var cell : Vector2i
+	for y in 7:
+		cell.y = y*2
+		for x in 12:
+			cell.x = x*2
+			var tid := killmaze.get_cell_tid(cell)
+			handle_cell_and_tid.call(cell, tid)
 
 func _physics_process(_delta: float) -> void:
 	
@@ -264,78 +276,56 @@ func _physics_process(_delta: float) -> void:
 		if noplayer:
 			pass
 		else:
-			for cell in killmaze.get_used_cells_by_tids([9]):
-				if randf() < 0.4:
-					settidcube(cell, 6 + randi()%2)
-			for cell in killmaze.get_used_cells_by_tids([40]):
-				if randf() < 0.4:
-					settidcube(cell, 46 + randi()%2)
+			killcubeloop( func(c,t): match t:
+					9:  if randf() < 0.4: settidcube(c,6+randi()%2)
+					40: if randf() < 0.4: settidcube(c,46+randi()%2)
+			)
 	elif phase > 10 and phase < 120:
 		if noplayer:
 			if phase > 40: phase = 40
 		elif phase % 10 == 0:
-			for cell in killmaze.get_used_cells_by_tids([6,7]):
-				if randf() < 0.1:
-					settidcube(cell, 6)
-				if randf() < 0.1:
-					settidcube(cell, 4)
-				if randf() < 0.1:
-					settidcube(cell, 9)
-			for cell in killmaze.get_used_cells_by_tids([46,47,56,57]):
-				if randf() < 0.1:
-					settidcube(cell, 46)
-				if randf() < 0.1:
-					settidcube(cell, 4)
-				if randf() < 0.1:
-					settidcube(cell, 40)
-		#if phase == 60:
-			#for cell in killmaze.get_used_cells_by_tids([3,96,97,98,99,]):
-				#settidcube(cell, 96)
-		#if phase == 49:
-			#for cell in killmaze.get_used_cells_by_tids([3,96,97,98,99,]):
-				#settidcube(cell, 97, 3, 5)
+			killcubeloop( func(c,t): match t:
+					6,7: for t2 in [6,4,9]:
+						if randf() < 0.1: settidcube(c,t2)
+					46,47,56,57: for t2 in [46,47,56,57]:
+						if randf() < 0.1: settidcube(c,t2)
+			)
 		if phase == 40:
-			for cell in killmaze.get_used_cells_by_tids([3,96,97,98,99,]):
-				settidcube(cell, 96)
-			if noplayer:
-				for cell in killmaze.get_used_cells_by_tids([40]):
-					settidcube(cell, 86)
+			killcubeloop( func(c,t): match t:
+				3,96,97,98,99: settidcube(c, 96)
+				40: if noplayer: settidcube(c, 86)
+			)
 		if phase == 29:
-			for cell in killmaze.get_used_cells_by_tids([3,96,97,98,99,]):
-				settidcube(cell, 97)
-			for cell in killmaze.get_used_cells_by_tids([  86,87,88,89,]):
-				settidcube(cell, 87)
+			killcubeloop( func(c,t): match t:
+				3,96,97,98,99 : settidcube(c, 97)
+				86,87,88,89   : settidcube(c, 87)
+			)
 		if phase == 19:
-			for cell in killmaze.get_used_cells_by_tids([3,96,97,98,99,]):
-				settidcube(cell, 98)
-			for cell in killmaze.get_used_cells_by_tids([  86,87,88,89,]):
-				settidcube(cell, 88)
+			killcubeloop( func(c,t): match t:
+				3,96,97,98,99 : settidcube(c, 98)
+				86,87,88,89   : settidcube(c, 88)
+			)
 		if phase == 13:
-			for cell in killmaze.get_used_cells_by_tids([3,96,97,98,99,]):
-				settidcube(cell, 99)
-			for cell in killmaze.get_used_cells_by_tids([  86,87,88,89,]):
-				settidcube(cell, 89)
+			killcubeloop( func(c,t): match t:
+				3,96,97,98,99 : settidcube(c, 99)
+				86,87,88,89   : settidcube(c, 89)
+			)
 	elif phase == 10:
-		for cell in killmaze.get_used_cells_by_tids([3,23,86,87,88,89,96,97,98,99,]):
-			settidcube(cell, 9)
-		for cell in killmaze.get_used_cells_by_tids([6,46,56]):
-			settidcube(cell, 4)
-		for cell in killmaze.get_used_cells_by_tids([7]):
-			settidcube(cell, 9)
-		for cell in killmaze.get_used_cells_by_tids([47,57]):
-			settidcube(cell, 40) # go back to blue
+			killcubeloop( func(c,t): match t:
+				3,7,23,86,87,88,89,96,97,98,99: settidcube(c,9)
+				6,46,56: settidcube(c,4)
+				47,57: settidcube(c,40)
+			)
 		# all cleared
 	elif phase == 5:
-		for cell in killmaze.get_used_cells_by_tids([4, 54]):
-			settidcube(cell, 5)
+		killcubeloop( func(c,t): match t:
+			4, 54: settidcube(c,5)
+		)
 	elif phase <= 0:
-		for cell in killmaze.get_used_cells_by_tids([3]):
-			settidcube(cell, 9)
-		for cell in killmaze.get_used_cells_by_tids([5]):
-			settidcube(cell, 3)
-		#for cell in killmaze.get_used_cells_by_tids([50]):
-			#settidcube(cell, 9)
-		
+		killcubeloop( func(c,t): match t:
+			3: settidcube(c, 9)
+			5: settidcube(c, 3)
+		)
 		if noplayer and not killmaze.get_used_cells_by_tids([3]):
 			# save.
 			var file : FileAccess
