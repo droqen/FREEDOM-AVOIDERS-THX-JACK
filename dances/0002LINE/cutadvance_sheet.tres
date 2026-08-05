@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="Sheet" format=3 uid="uid://dxdmffeonp6qw"]
+
+[ext_resource type="Script" uid="uid://byun6mt7c4fun" path="res://navdi/navdisheet.gd" id="1_s48cf"]
+[ext_resource type="Texture2D" uid="uid://dhahrrp7s5mmw" path="res://dances/0002LINE/cutadvance.pyxel" id="2_ef3kx"]
+
+[resource]
+script = ExtResource("1_s48cf")
+texture = ExtResource("2_ef3kx")
+hframes = 10
+vframes = 10

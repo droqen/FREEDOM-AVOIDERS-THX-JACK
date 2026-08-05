@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://bxmeaxo1mshrf"]
 
 [ext_resource type="Script" uid="uid://camgm6ldy05jj" path="res://main/main.gd" id="1_ig7tw"]
-[ext_resource type="Resource" uid="uid://dntqu2q4nv5ul" path="res://dances/01_untitled/01_untitled_Dream.tres" id="2_0xm2m"]
+[ext_resource type="Resource" uid="uid://dnhbotnnupq6o" path="res://dances/0002LINE/0002LINE_Dream.tres" id="2_0xm2m"]
 
 [node name="Main" type="Node2D" unique_id=1682353420]
 script = ExtResource("1_ig7tw")
