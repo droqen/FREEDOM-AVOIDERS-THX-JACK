@@ -67,22 +67,43 @@ func _physics_process(_delta: float) -> void:
 		for cell in killmaze.get_used_cells_by_tids([40]):
 			if randf() < 0.4:
 				settidcube(cell, 46 + randi()%2)
-	elif phase > 10 and phase < 120 and phase % 10 == 0:
-		for cell in killmaze.get_used_cells_by_tids([6,7]):
-			if randf() < 0.1:
-				settidcube(cell, 6)
-			if randf() < 0.1:
-				settidcube(cell, 4)
-			if randf() < 0.1:
-				settidcube(cell, 9)
-		for cell in killmaze.get_used_cells_by_tids([46,47,56,57]):
-			if randf() < 0.1:
-				settidcube(cell, 46)
-			if randf() < 0.1:
-				settidcube(cell, 4)
-			if randf() < 0.1:
-				settidcube(cell, 40)
+	elif phase > 10 and phase < 120:
+		if phase % 10 == 0:
+			for cell in killmaze.get_used_cells_by_tids([6,7]):
+				if randf() < 0.1:
+					settidcube(cell, 6)
+				if randf() < 0.1:
+					settidcube(cell, 4)
+				if randf() < 0.1:
+					settidcube(cell, 9)
+			for cell in killmaze.get_used_cells_by_tids([46,47,56,57]):
+				if randf() < 0.1:
+					settidcube(cell, 46)
+				if randf() < 0.1:
+					settidcube(cell, 4)
+				if randf() < 0.1:
+					settidcube(cell, 40)
+		#if phase == 60:
+			#for cell in killmaze.get_used_cells_by_tids([3,96,97,98,99,]):
+				#settidcube(cell, 96)
+		#if phase == 49:
+			#for cell in killmaze.get_used_cells_by_tids([3,96,97,98,99,]):
+				#settidcube(cell, 97, 3, 5)
+		if phase == 40:
+			for cell in killmaze.get_used_cells_by_tids([3,96,97,98,99,]):
+				settidcube(cell, 96)
+		if phase == 29:
+			for cell in killmaze.get_used_cells_by_tids([3,96,97,98,99,]):
+				settidcube(cell, 97)
+		if phase == 19:
+			for cell in killmaze.get_used_cells_by_tids([3,96,97,98,99,]):
+				settidcube(cell, 98)
+		if phase == 13:
+			for cell in killmaze.get_used_cells_by_tids([3,96,97,98,99,]):
+				settidcube(cell, 99)
 	elif phase == 10:
+		for cell in killmaze.get_used_cells_by_tids([3,23,96,97,98,99,]):
+			settidcube(cell, 9)
 		for cell in killmaze.get_used_cells_by_tids([6,46,56]):
 			settidcube(cell, 4)
 		for cell in killmaze.get_used_cells_by_tids([7]):
