@@ -13,6 +13,7 @@ config_version=5
 config/name="freedom"
 run/main_scene="uid://bxmeaxo1mshrf"
 config/features=PackedStringArray("4.7", "GL Compatibility")
+boot_splash/bg_color=Color(0, 0, 0, 1)
 config/icon="res://icon.svg"
 
 [autoload]

@@ -10,14 +10,18 @@ var chaser_accel : int = 0
 var chaser_last_move : Vector2i
 var chaser_straight_line_accel : int = 0
 
+const MAXIMUM_SCORE := 34 * 48
 var score : int = 0
 func gain_point() -> void:
-	score += 1
-	Dreamer.w("last_score", score)
-	$ScoreLabel.text = get_score_string(score)
-	if score > Dreamer.r("high_score", 0):
-		Dreamer.w("high_score", score)
-		$HighScoreLabel.text = get_score_string(score, ' ')
+	if score < MAXIMUM_SCORE: # max score.
+		score += 1
+		Dreamer.w("last_score", score)
+		$ScoreLabel.text = get_score_string(score)
+		if score > Dreamer.r("high_score", 0):
+			Dreamer.w("high_score", score)
+			$HighScoreLabel.text = get_score_string(score, ' ')
+		
+		$beep_score.play()
 func get_score_string(_score,fillchar='|',lastchar='|') -> String:
 	var t : String = ''
 	for i in range(_score-1):
@@ -33,8 +37,8 @@ func get_score_string(_score,fillchar='|',lastchar='|') -> String:
 func getcubepos(pos) -> Vector2i:
 	var cell : Vector2i = killmaze.local_to_map(pos - killmaze.position)
 	var cubecell = Vector2i(
-		cell.x - cell.x % 2,
-		cell.y - cell.y % 2,
+		clampi(cell.x - cell.x % 2, 0-1, 12*2+0),
+		clampi(cell.y - cell.y % 2, 0-1, 7*2+0),
 	)
 	return cubecell
 
@@ -63,6 +67,8 @@ func settidcube(cell,tid,tidafter=-1,delay=0) -> void:
 		pass
 
 func _ready() -> void:
+	player.igothurt.connect(func(): $beep_stunned.play())
+	
 	var file : FileAccess
 	file = FileAccess.open("user://last_score", FileAccess.READ)
 	if file:
@@ -161,15 +167,14 @@ func killcubeloop(handle_cell_and_tid:Callable) -> void:
 			handle_cell_and_tid.call(cell, tid)
 
 func _physics_process(_delta: float) -> void:
-	
 	if start_anim_timer < 80:
 		if Pin.get_dpad() or Pin.get_action_held():
 			if start_anim_timer == 0: $beep_gamestart_loop.play(0.0)
 			start_anim_timer += 1
-			$beep_gamestart_loop.volume = start_anim_timer / 80.0
+			$beep_gamestart_loop.volume = 0.8 * start_anim_timer / 80.0
 		elif start_anim_timer > 0:
 			start_anim_timer -= 1
-			$beep_gamestart_loop.volume = start_anim_timer / 80.0
+			$beep_gamestart_loop.volume = 0.8 * start_anim_timer / 80.0
 		else:
 			$beep_gamestart_loop.stop()
 		player.spawning = start_anim_timer
@@ -195,6 +200,7 @@ func _physics_process(_delta: float) -> void:
 			$NavdiBeepTitle.stop()
 			$NavdiBeepAction.play()
 			$beep_gamestart_pang.play()
+			#get_tree().paused = true
 		return
 	
 	var noplayer : bool = not is_instance_valid(player) or player.dying > 15
@@ -276,9 +282,9 @@ func _physics_process(_delta: float) -> void:
 				
 				# these aren't good. no points.
 				# it's just visual feedback.
-				46: settidcube(playercube, 56, 46, 5)
-				47: settidcube(playercube, 57, 47, 5)
-				04: settidcube(playercube, 54, 04, 5)
+				46: settidcube(playercube, 56, 46, 5); $beep_score_no.play()
+				47: settidcube(playercube, 57, 47, 5); $beep_score_no.play()
+				04: settidcube(playercube, 54, 04, 5); $beep_score_no.play()
 					
 				#6: settidcube(playercube, 41, 46, 5)
 				#7: settidcube(playercube, 41, 47, 5)
@@ -286,8 +292,8 @@ func _physics_process(_delta: float) -> void:
 	
 	$deathbank.spawn("deathrect").setup()
 	phase -= 1
-	if noplayer and phase > 120:
-		phase -= 10; if phase == 120: phase -= 1
+	if noplayer and phase >= 120:
+		phase -= 10; if phase == 120: phase -= 1 # skip 120
 	elif phase == 120:
 		killcubeloop(_kcl_spawn_dithers_firstprobability)
 	elif phase > 10 and phase < 120:
@@ -305,7 +311,7 @@ func _physics_process(_delta: float) -> void:
 		killcubeloop(_kcl_dither_resolve_all)
 	elif phase == 5:
 		killcubeloop(_kcl_turn_pending_solids_into_flash_solids)
-	elif phase <= 0:
+	elif phase == 0:
 		killcubeloop(_kcl_clear_solids_calm_flash_solids)
 		if noplayer and not killmaze.get_used_cells_by_tids([3]):
 			# save.
@@ -316,20 +322,32 @@ func _physics_process(_delta: float) -> void:
 			file = FileAccess.open("user://high_score", FileAccess.WRITE)
 			file.store_string(str(Dreamer.r("high_score")))
 			file.close()
-			Dreamer.dreamfresh(load("res://dances/01_untitled/01_untitled_Dream.tres"))
-		
-		phase = 200 + randi() % 100
+			phase = -1
+		else:
+			phase = 200 + randi() % 100
+	elif phase < 0:
+		if noplayer:
+			if phase < -100:
+				Dreamer.dreamfresh(load("res://dances/01_untitled/01_untitled_Dream.tres"))
+		else:
+			phase = 200 + randi() % 100
 
 func _kcl_spawn_dithers_firstprobability(c:Vector2i,t:int):
 	match t:
 					9:  if randf() < 0.4: settidcube(c,6+randi()%2)
 					40: if randf() < 0.4: settidcube(c,46+randi()%2)
 func _kcl_spawn_dithers_intermittentprobability(c:Vector2i,t:int):
-	match t: # make more performant - minimize randcalls
-		6,7: for t2 in [6,4,9]:
-			if randf() < 0.1: settidcube(c,t2)
-		46,47,56,57: for t2 in [46,47,56,57]:
-			if randf() < 0.1: settidcube(c,t2)
+	match t:
+		6,7:
+			var r := randf()
+			if r < 0.1: settidcube(c,6)
+			elif r < 0.19: settidcube(c,4)
+			elif r < 0.271: settidcube(c,9)
+			#for t2 in [6,4,9]: if randf() < 0.1: settidcube(c,t2)
+		46: if randf() < 0.063: settidcube(c,47)
+		47: if randf() < 0.06: settidcube(c,46)
+		56: if randf() < 0.063: settidcube(c,57)
+		57: if randf() < 0.06: settidcube(c,56)
 
 func _kcl_slidefades_frm6(c:Vector2i,t:int):
 	match t:

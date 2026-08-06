@@ -1,5 +1,7 @@
 extends Node2D
 
+signal igothurt
+
 var spawning : int = 0
 
 var vx : float; var vy : float;
@@ -80,21 +82,6 @@ func _physics_process(_delta: float) -> void:
 	else:
 		hurting = false; justhurt = false;
 		var dpad = Pin.get_dpad()
-		if (dpad.x != 0) != (dpad.y != 0):
-			if dpad == straightlinedir:
-				straightlinedur += 1
-			else:
-				straightlinedir = dpad
-				straightlinedur = 0
-		elif straightlinedur > 0:
-			if straightlinedir.x and dpad.x == straightlinedir.x:
-				straightlinedur -= 1
-			elif straightlinedir.y and dpad.y == straightlinedir.y:
-				straightlinedur -= 1
-			else:
-				straightlinedur = 0
-		else:
-			straightlinedur = 0
 		
 		var straight_dir : Vector2i = Vector2i(0,-1)
 		position += Vector2(vx,vy)
@@ -125,8 +112,27 @@ func _physics_process(_delta: float) -> void:
 		var raw_dot = preferred_dir.dot(Vector2(dpad)) # 2 = full match, -1 : least match
 		var smooth_dot = 0.5 + 0.5 * clamp(raw_dot,-.7,.7)/.7
 		var max_speed = 0.35 + 0.85 * smooth_dot * smooth_dot
+		
+		if (dpad.x != 0) != (dpad.y != 0):
+			if dpad == straightlinedir:
+				if straightlinedir == straight_dir:
+					straightlinedur += 1
+				else:
+					straightlinedur = 0
+			else:
+				straightlinedir = dpad
+				straightlinedur = 0
+		elif straightlinedur > 0:
+			if straightlinedir.x and dpad.x == straightlinedir.x:
+				straightlinedur -= 1
+			elif straightlinedir.y and dpad.y == straightlinedir.y:
+				straightlinedur -= 1
+			else:
+				straightlinedur = 0
+		else:
+			straightlinedur = 0
+		
 		if straightlinedur > 20:
-			if straightlinedir == straight_dir:
 				max_speed *= 1 + 0.25 * inverse_lerp(10,50,clamp(straightlinedur,20,50))
 		var accelmult = 0.02 + 0.04 * smooth_dot
 		vx = whoosh(vx,dpad.x*max_speed,
@@ -143,7 +149,7 @@ func _physics_process(_delta: float) -> void:
 		if position.x < 5: tryhurtme()
 		if position.y < 5: tryhurtme()
 		if position.x > 245: tryhurtme()
-		if position.y > 145: tryhurtme()
+		if position.y > 145 and position.x >= 15: tryhurtme()
 	
 	if dying:
 		showsprite(AAAGHSPRITE)
@@ -173,4 +179,5 @@ func tryhurtme() -> bool:
 		bufs.on(b)
 	# lose hp? die? idk
 	#rot = randi() % 4
+	igothurt.emit()
 	return true
