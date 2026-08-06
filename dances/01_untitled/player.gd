@@ -15,11 +15,15 @@ enum {
 }
 
 const CENTER := Vector2(125, 75)
+const TAU16 := PI * 0.125
+const TAU8 := PI * 0.25
+const TAU4 := PI * 0.5
 
 @onready var bufs : Bufs = Bufs.Make(self).setup_bufons([
 	TURNBUF,4, JUSTHURTBUF,5, HURTBUF,30, INVINCBUF,120, ])
 @onready var SPAWNSPRITE = $sprites/spawnsprite
 @onready var SNAKESPRITE = $sprites/snakesprite
+@onready var DASHSPRITE = $sprites/dashsprite
 @onready var REDSPRITE = $sprites/redsprite
 @onready var AAAGHSPRITE = $sprites/aaaghsprite
 @onready var ALLSPRITES = $sprites.get_children()
@@ -82,39 +86,48 @@ func _physics_process(_delta: float) -> void:
 			else:
 				straightlinedir = dpad
 				straightlinedur = 0
+		elif straightlinedur > 0:
+			if straightlinedir.x and dpad.x == straightlinedir.x:
+				straightlinedur -= 1
+			elif straightlinedir.y and dpad.y == straightlinedir.y:
+				straightlinedur -= 1
+			else:
+				straightlinedur = 0
 		else:
 			straightlinedur = 0
 		
-		var preferred_dir : Vector2 = Vector2(1,1)
+		var straight_dir : Vector2i = Vector2i(0,-1)
 		position += Vector2(vx,vy)
 		var canturn : bool = not bufs.has(TURNBUF) and not bufs.has(HURTBUF)
 		match rot:
 			0:
-				preferred_dir = Vector2.UP.rotated(PI*0.25) # north-east
+				straight_dir = Vector2i.UP # north
 				if dpad.x > 0 and dpad.y >= 0 and canturn:
 					# press right to rotate, while NOT pressing north
 					rot = 1
 					bufs.on(TURNBUF)
 			1:
-				preferred_dir = Vector2.RIGHT.rotated(PI*0.25)
+				straight_dir = Vector2i.RIGHT
 				if dpad.y > 0 and dpad.x <= 0 and canturn:
 					rot = 2
 					bufs.on(TURNBUF)
 			2:
-				preferred_dir = Vector2.DOWN.rotated(PI*0.25)
+				straight_dir = Vector2i.DOWN
 				if dpad.x < 0 and dpad.y <= 0 and canturn:
 					rot = 3
 					bufs.on(TURNBUF)
 			3:
-				preferred_dir = Vector2.LEFT.rotated(PI*0.25)
+				straight_dir = Vector2i.LEFT
 				if dpad.y < 0 and dpad.x >= 0 and canturn:
 					rot = 0
 					bufs.on(TURNBUF)
+		var preferred_dir : Vector2 = Vector2(straight_dir).rotated(TAU8) # 45 degrees cw
 		var raw_dot = preferred_dir.dot(Vector2(dpad)) # 2 = full match, -1 : least match
 		var smooth_dot = 0.5 + 0.5 * clamp(raw_dot,-.7,.7)/.7
 		var max_speed = 0.35 + 0.85 * smooth_dot * smooth_dot
 		if straightlinedur > 20:
-			max_speed *= 1 + 0.25 * inverse_lerp(20,50,clamp(straightlinedur,20,50))
+			if straightlinedir == straight_dir:
+				max_speed *= 1 + 0.25 * inverse_lerp(10,50,clamp(straightlinedur,20,50))
 		var accelmult = 0.02 + 0.04 * smooth_dot
 		vx = whoosh(vx,dpad.x*max_speed,
 			accelmult if dpad.x*vx>0 else 0.05)
@@ -138,20 +151,19 @@ func _physics_process(_delta: float) -> void:
 		AAAGHSPRITE.setup([21,32,33,34,35,36,36,],5)
 		$sprites.modulate.a = 1 # fposmod(dying * 0.25,1.25) - 0.05 * dying
 	elif bufs.has(INVINCBUF):
-		if bufs.has(JUSTHURTBUF):
-			showsprite(AAAGHSPRITE)
-		elif bufs.has(HURTBUF):
-			showsprite(REDSPRITE)
-		else:
-			showsprite(SNAKESPRITE)
+		if bufs.has(JUSTHURTBUF): showsprite(AAAGHSPRITE)
+		elif bufs.has(HURTBUF): showsprite(REDSPRITE)
+		elif straightlinedur > 20: showsprite(DASHSPRITE)
+		else: showsprite(SNAKESPRITE)
 		var iiiii = bufs.read(INVINCBUF)
 		if iiiii > 40:
 			$sprites.modulate.a = fposmod(iiiii * 0.25,1.25)
 		else:
 			$sprites.modulate.a = fposmod(iiiii * 0.125,1.25) + 0.25
 	elif bufs.has(TURNBUF): showsprite(null)
+	elif straightlinedur > 20: showsprite(DASHSPRITE)
 	else: showsprite(SNAKESPRITE)
-	$sprites.rotation = PI * 0.5 * rot
+	$sprites.rotation = TAU4 * rot
 	#else: showsprite(REDSPRITE)
 	
 

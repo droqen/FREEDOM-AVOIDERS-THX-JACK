@@ -164,9 +164,14 @@ func _physics_process(_delta: float) -> void:
 	
 	if start_anim_timer < 80:
 		if Pin.get_dpad() or Pin.get_action_held():
+			if start_anim_timer == 0: $beep_gamestart_loop.play(0.0)
 			start_anim_timer += 1
+			$beep_gamestart_loop.volume = start_anim_timer / 80.0
 		elif start_anim_timer > 0:
 			start_anim_timer -= 1
+			$beep_gamestart_loop.volume = start_anim_timer / 80.0
+		else:
+			$beep_gamestart_loop.stop()
 		player.spawning = start_anim_timer
 		var t := 0
 		if start_anim_timer > 20: t += 1
@@ -186,9 +191,20 @@ func _physics_process(_delta: float) -> void:
 			asm.queue_free()
 			$ScoreLabel.text = ''
 			$ScoreLabel.visible_ratio = 1
+			$beep_gamestart_loop.stop()
+			$NavdiBeepTitle.stop()
+			$NavdiBeepAction.play()
+			$beep_gamestart_pang.play()
 		return
 	
 	var noplayer : bool = not is_instance_valid(player) or player.dying > 15
+	
+	if noplayer:
+		pass
+		#$NavdiBeepAction.stop()
+	elif player.dying == 2:
+		$beep_gameover.play()
+		$NavdiBeepAction.stop()
 	
 	chaser_timer -= 1
 	
@@ -271,22 +287,20 @@ func _physics_process(_delta: float) -> void:
 	$deathbank.spawn("deathrect").setup()
 	phase -= 1
 	if noplayer and phase > 120:
-		phase -= 10
+		phase -= 10; if phase == 120: phase -= 1
 	elif phase == 120:
-		if noplayer:
-			pass
-		else:
-			killcubeloop(_kcl_spawn_dithers_firstprobability)
+		killcubeloop(_kcl_spawn_dithers_firstprobability)
 	elif phase > 10 and phase < 120:
 		if noplayer:
 			if phase > 40: phase = 40
 		elif phase % 10 == 0:
 			killcubeloop(_kcl_spawn_dithers_intermittentprobability)
-		if phase == 40: killcubeloop(_kcl_slidefades_frm6_noplayer if noplayer
-								else _kcl_slidefades_frm6)
-		if phase == 29: killcubeloop(_kcl_slidefades_frm7)
-		if phase == 19: killcubeloop(_kcl_slidefades_frm8)
-		if phase == 13: killcubeloop(_kcl_slidefades_frm9)
+		match phase:
+			40: killcubeloop(_kcl_slidefades_frm6_noplayer if noplayer
+						else _kcl_slidefades_frm6)
+			29: killcubeloop(_kcl_slidefades_frm7)
+			19: killcubeloop(_kcl_slidefades_frm8)
+			13: killcubeloop(_kcl_slidefades_frm9)
 	elif phase == 10:
 		killcubeloop(_kcl_dither_resolve_all)
 	elif phase == 5:
